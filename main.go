@@ -2,13 +2,12 @@ package main
 
 import (
 	"fmt"
+	"github.com/koind/shortener-servis/httpserver"
+	"github.com/koind/shortener-servis/myshortener"
+	"github.com/koind/shortener-servis/service"
 	"log"
 	"os"
 	"strconv"
-
-	"github.com/koind/shortener-sample/httpserver"
-	"github.com/koind/shortener-sample/myshortener"
-	"github.com/koind/shortener-sample/service"
 )
 
 func main() {

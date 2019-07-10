@@ -1,4 +1,4 @@
-module github.com:nyddle/shortener.git
+module github.com/koind/shortener-servis
 
 go 1.12
 

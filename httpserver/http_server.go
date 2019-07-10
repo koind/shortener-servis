@@ -2,7 +2,7 @@ package httpserver
 
 import (
 	"fmt"
-	"github.com/koind/shortener-sample/service"
+	"github.com/koind/shortener-servis/service"
 	"net/http"
 
 	"github.com/gorilla/mux"
