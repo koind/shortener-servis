@@ -24,7 +24,6 @@ func NewShortenerService(shortener Shortener, address string) *ShortenerService 
 }
 
 func (ss *ShortenerService) ResolverHandle(w http.ResponseWriter, r *http.Request) {
-
 	switch r.Method {
 	case "GET":
 		vars := mux.Vars(r)

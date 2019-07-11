@@ -34,6 +34,5 @@ func (s *MyShortener) Resolve(url string) string {
 
 // NewMyShortener returns a map wrapper to lookup shortened urls
 func NewMyShortener() *MyShortener {
-
 	return &MyShortener{storage: make(map[string]string)}
 }

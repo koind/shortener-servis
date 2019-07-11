@@ -2,31 +2,31 @@ package main
 
 import (
 	"fmt"
+	"github.com/BurntSushi/toml"
 	"github.com/koind/shortener-servis/httpserver"
 	"github.com/koind/shortener-servis/myshortener"
 	"github.com/koind/shortener-servis/service"
-	"log"
-	"os"
-	"strconv"
+	"github.com/sirupsen/logrus"
 )
 
+var config struct {
+	Host string
+	Port int
+}
+
+func init() {
+	if _, err := toml.DecodeFile("config/testing/config.toml", &config); err != nil {
+		logrus.Fatalln("Failed to load config", err)
+		return
+	}
+}
+
 func main() {
-
-	httpPort, err := strconv.Atoi(os.Getenv("SHORTENER_PORT"))
-	if err != nil {
-		panic(fmt.Sprint("SHORTENER_PORT not defined"))
-	}
-
-	shortenerHost := os.Getenv("SHORTENER_HOST")
-	if shortenerHost == "" {
-		panic(fmt.Sprint("SHORTENER_HOST not defined"))
-	}
-
-	shortenerAddress := fmt.Sprintf("%s:%d", shortenerHost, httpPort)
+	shortenerAddress := fmt.Sprintf("%s:%d", config.Host, config.Port)
 
 	shortener := myshortener.NewMyShortener()
 	shortenerService := service.NewShortenerService(shortener, shortenerAddress)
-	hs := httpserver.NewHTTPServer(shortenerService, httpPort)
+	hs := httpserver.NewHTTPServer(shortenerService, config.Port)
 
-	log.Fatal(hs.Start())
+	logrus.Fatalln(hs.Start())
 }
