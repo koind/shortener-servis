@@ -13,6 +13,7 @@ type HttpServer struct {
 	httpPort int
 	router   http.Handler
 	s        *service.ShortenerService
+	stats    *service.StatsService
 }
 
 // Start fires up the http server
@@ -21,15 +22,16 @@ func (s *HttpServer) Start() error {
 }
 
 // NewHTTPServer returns http server that wraps shortener business logic
-func NewHTTPServer(ss *service.ShortenerService, port int) *HttpServer {
+func NewHTTPServer(ss *service.ShortenerService, stats *service.StatsService, port int) *HttpServer {
 
 	r := mux.NewRouter()
-	hs := HttpServer{router: r, httpPort: port, s: ss}
+	hs := HttpServer{router: r, httpPort: port, s: ss, stats: stats}
 
 	r.HandleFunc("/{shortened}", ss.ResolverHandle)
 	r.HandleFunc("/", ss.ResolverHandle)
 
 	http.Handle("/", r)
+	http.HandleFunc("/stats", ss.StatsHandle)
 
 	return &hs
 }

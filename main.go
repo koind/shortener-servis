@@ -6,6 +6,7 @@ import (
 	"github.com/koind/shortener-servis/httpserver"
 	"github.com/koind/shortener-servis/myshortener"
 	"github.com/koind/shortener-servis/service"
+	"github.com/koind/shortener-servis/stats"
 	"github.com/sirupsen/logrus"
 )
 
@@ -25,8 +26,10 @@ func main() {
 	shortenerAddress := fmt.Sprintf("%s:%d", config.Host, config.Port)
 
 	shortener := myshortener.NewMyShortener()
-	shortenerService := service.NewShortenerService(shortener, shortenerAddress)
-	hs := httpserver.NewHTTPServer(shortenerService, config.Port)
+	statsStruct := stats.NewStats()
+	statsService := service.NewStatsService(statsStruct)
+	shortenerService := service.NewShortenerService(shortener, statsService, shortenerAddress)
+	hs := httpserver.NewHTTPServer(shortenerService, statsService, config.Port)
 
 	logrus.Fatalln(hs.Start())
 }
