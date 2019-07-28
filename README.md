@@ -2,12 +2,6 @@
 
 Run
 -
-```bash
-go run main.go
 ```
-
-You can change the config on path:
--
-```
-config/testing/config.toml
+SHORTENER_HOST="localhost" SHORTENER_PORT=1111  go run main.go
 ```

@@ -2,34 +2,36 @@ package main
 
 import (
 	"fmt"
-	"github.com/BurntSushi/toml"
+	"github.com/caarlos0/env"
+	"github.com/koind/shortener-servis/config"
 	"github.com/koind/shortener-servis/httpserver"
 	"github.com/koind/shortener-servis/myshortener"
+	"github.com/koind/shortener-servis/mystats"
 	"github.com/koind/shortener-servis/service"
-	"github.com/koind/shortener-servis/stats"
-	"github.com/sirupsen/logrus"
+	"go.uber.org/zap"
+	"os"
 )
 
-var config struct {
-	Host string
-	Port int
-}
-
-func init() {
-	if _, err := toml.DecodeFile("config/testing/config.toml", &config); err != nil {
-		logrus.Fatalln("Failed to load config", err)
-		return
-	}
-}
-
 func main() {
-	shortenerAddress := fmt.Sprintf("%s:%d", config.Host, config.Port)
+	logger, err := zap.NewProduction()
+	if err != nil {
+		fmt.Println(err)
+		os.Exit(1)
+	}
+	defer logger.Sync()
+
+	cfg := config.Config{}
+	if err := env.Parse(&cfg); err != nil {
+		fmt.Println(err)
+		os.Exit(1)
+	}
+
+	shortenerAddress := fmt.Sprintf("%s:%d", cfg.Host, cfg.Port)
 
 	shortener := myshortener.NewMyShortener()
-	statsStruct := stats.NewStats()
-	statsService := service.NewStatsService(statsStruct)
-	shortenerService := service.NewShortenerService(shortener, statsService, shortenerAddress)
-	hs := httpserver.NewHTTPServer(shortenerService, statsService, config.Port)
+	stats := mystats.NewStats(logger)
+	shortenerService := service.NewShortenerService(shortener, stats, logger, shortenerAddress)
+	hs := httpserver.NewHTTPServer(shortenerService, cfg.Port)
 
-	logrus.Fatalln(hs.Start())
+	logger.Error("Error starting app", zap.Error(hs.Start()))
 }
