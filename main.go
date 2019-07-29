@@ -9,21 +9,19 @@ import (
 	"github.com/koind/shortener-servis/mystats"
 	"github.com/koind/shortener-servis/service"
 	"go.uber.org/zap"
-	"os"
+	"log"
 )
 
 func main() {
 	logger, err := zap.NewProduction()
 	if err != nil {
-		fmt.Println(err)
-		os.Exit(1)
+		log.Fatal(err)
 	}
 	defer logger.Sync()
 
 	cfg := config.Config{}
 	if err := env.Parse(&cfg); err != nil {
-		fmt.Println(err)
-		os.Exit(1)
+		log.Fatal(err)
 	}
 
 	shortenerAddress := fmt.Sprintf("%s:%d", cfg.Host, cfg.Port)

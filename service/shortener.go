@@ -35,7 +35,7 @@ func (ss *ShortenerService) ResolverHandle(w http.ResponseWriter, r *http.Reques
 	ss.stats.Add(r.URL.String())
 
 	switch r.Method {
-	case "GET":
+	case http.MethodGet:
 		vars := mux.Vars(r)
 		if url, ok := vars["shortened"]; ok {
 			shortUrl := ss.Shortener.Resolve(string(url))
@@ -52,7 +52,7 @@ func (ss *ShortenerService) ResolverHandle(w http.ResponseWriter, r *http.Reques
 
 			w.WriteHeader(404)
 		}
-	case "POST":
+	case http.MethodPost:
 		buf := new(bytes.Buffer)
 		buf.ReadFrom(r.Body)
 		shortened := ss.address + "/" + ss.Shortener.Shorten(buf.String())
